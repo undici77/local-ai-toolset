@@ -11,7 +11,15 @@ plugins {
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-kotlin { jvmToolchain(21) }
+kotlin {
+    jvmToolchain(21)
+    compilerOptions {
+        // CLion 2025.3 bundles the Kotlin 2.2 stdlib (kotlin.stdlib.default.dependency=false):
+        // compile against that API so no newer stdlib call can fail at runtime.
+        apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2
+    }
+}
 
 repositories {
     mavenCentral()

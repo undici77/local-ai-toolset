@@ -9,3 +9,7 @@ updates:
   - package-ecosystem: docker
     directory: /docker
     schedule: { interval: monthly }
+    ignore:
+      # The build JDK must stay 21 (jvmToolchain(21), same as the IDE runtime).
+      - dependency-name: eclipse-temurin
+        update-types: [version-update:semver-major]
