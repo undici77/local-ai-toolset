@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21.0.13_9-jdk-noble
+FROM eclipse-temurin:24.0.2_12-jdk-noble
 RUN apt-get update && apt-get install -y --no-install-recommends git unzip ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 ARG UID=1000
