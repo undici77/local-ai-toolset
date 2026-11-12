@@ -1,9 +1,15 @@
 name: release
+# Push a tag vX.Y.Z (must equal pluginVersion) to test, sign, create the GitHub Release
+# and, when the repo variable PUBLISH_TO_MARKETPLACE is "true", upload to JetBrains Marketplace.
+# Keep the variable unset until the first version has been uploaded by hand.
 on:
   push:
     tags: ["v*"]
 permissions:
   contents: write
+concurrency:
+  group: release
+  cancel-in-progress: false
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -14,26 +20,36 @@ jobs:
       PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
       PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: gradle/actions/wrapper-validation@v6
       - name: Tag must match pluginVersion
         run: test "v$(grep ^pluginVersion= gradle.properties | cut -d= -f2)" = "$GITHUB_REF_NAME"
-      - uses: actions/cache@v4
+      - name: Signing secrets must be set
+        run: test -n "$CERTIFICATE_CHAIN" && test -n "$PRIVATE_KEY" && test -n "$PRIVATE_KEY_PASSWORD"
+      - uses: actions/cache@v6
         with:
           path: .gradle-docker
           key: gradle-${{ hashFiles('**/*.gradle.kts', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: gradle-
       - name: Free disk space
         run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
-      - name: Test and verify
+      - name: Test, verify and sign
         run: |
           mkdir -p .gradle-docker
           export UID GID=$(id -g)
           make image test verify
-      - name: Sign and publish
-        run: docker compose run --rm build ./gradlew --no-daemon signPlugin publishPlugin
+          docker compose run --rm build ./gradlew --no-daemon signPlugin verifyPluginSignature
       - name: GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           docker compose run --rm build ./gradlew --no-daemon -q getChangelog --no-header > release-notes.md
-          gh release create "$GITHUB_REF_NAME" build/distributions/*-signed.zip --notes-file release-notes.md
+          prerelease=""
+          case "$GITHUB_REF_NAME" in *-*) prerelease="--prerelease" ;; esac
+          gh release create "$GITHUB_REF_NAME" build/distributions/*-signed.zip \
+            --title "$GITHUB_REF_NAME" --notes-file release-notes.md --verify-tag $prerelease
+      - name: Publish to JetBrains Marketplace
+        if: vars.PUBLISH_TO_MARKETPLACE == 'true'
+        run: |
+          test -n "$PUBLISH_TOKEN"
+          docker compose run --rm build ./gradlew --no-daemon publishPlugin

@@ -71,6 +71,4 @@
 - Kotlin 2.2.21, IntelliJ Platform Gradle Plugin 2.20.0, Gradle 9.9.0, JDK 21, target CLion 2025.3 (since-build 253).
 
 [Unreleased]: https://github.com/undici77/local-ai-toolset/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/undici77/local-ai-toolset/compare/v0.1.1...v1.0.0
-[0.1.1]: https://github.com/undici77/local-ai-toolset/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/undici77/local-ai-toolset/commits/v0.1.0
+[1.0.0]: https://github.com/undici77/local-ai-toolset/releases/tag/v1.0.0

@@ -36,6 +36,9 @@ changelog {
 }
 
 intellijPlatform {
+    // buildSearchableOptions boots a headless CLion, whose Radler (ReSharper) backend aborts
+    // (exit 134) in containers. The plugin has only a few settings, so the index is not worth it.
+    buildSearchableOptions = false
     pluginConfiguration {
         name = providers.gradleProperty("pluginName")
         version = providers.gradleProperty("pluginVersion")

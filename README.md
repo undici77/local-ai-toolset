@@ -1,5 +1,7 @@
 # Local AI Toolset
 
+[![build](https://github.com/undici77/local-ai-toolset/actions/workflows/build.yml/badge.svg)](https://github.com/undici77/local-ai-toolset/actions/workflows/build.yml)
+
 <!-- plugin-description -->
 Lightweight, privacy-first AI helpers for CLion and any IntelliJ-platform IDE 2025.3+.
 Generate commit messages, chat with files and selections as context, and explain commits, all running on your own model
@@ -126,6 +128,16 @@ make image wrapper test build verify
 ```
 
 The output is `build/distributions/local-ai-toolset-<version>.zip`.
+
+## Release
+
+1. Set `pluginVersion` in `gradle.properties` (e.g. `1.1.0`, or `1.1.0-beta.1` for the beta channel).
+2. Run `./gradlew patchChangelog` to move `[Unreleased]` under the new version, then commit.
+3. Push a tag `v<pluginVersion>`. The `release` workflow tests, signs, creates the GitHub Release
+   and publishes to JetBrains Marketplace.
+
+The workflow needs the repo secrets `CERTIFICATE_CHAIN`, `PRIVATE_KEY`, `PRIVATE_KEY_PASSWORD`, `PUBLISH_TOKEN`
+and the repo variable `PUBLISH_TO_MARKETPLACE=true` (without it, the Marketplace step is skipped).
 
 ## License
 

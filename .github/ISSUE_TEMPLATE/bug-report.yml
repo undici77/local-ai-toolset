@@ -1,0 +1,37 @@
+name: Bug report
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got.
+    validations: { required: true }
+  - type: input
+    id: plugin_version
+    attributes:
+      label: Plugin version
+      placeholder: "1.0.0"
+    validations: { required: true }
+  - type: input
+    id: ide_version
+    attributes:
+      label: IDE and version
+      description: Help > About, e.g. "CLion 2025.3, build CL-253.28294.335"
+    validations: { required: true }
+  - type: input
+    id: provider
+    attributes:
+      label: Provider and model
+      placeholder: "Ollama, qwen3:8b"
+  - type: input
+    id: os
+    attributes:
+      label: OS
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: Relevant lines from Help > Show Log. Remove anything private.
+      render: text

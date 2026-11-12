@@ -1,16 +1,22 @@
 name: build
 on:
   push:
-    branches: ["**"]
+    branches: [master]
   pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       GRADLE_CACHE: ${{ github.workspace }}/.gradle-docker
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v7
+      - uses: gradle/actions/wrapper-validation@v6
+      - uses: actions/cache@v6
         with:
           path: .gradle-docker
           key: gradle-${{ hashFiles('**/*.gradle.kts', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties') }}
@@ -21,12 +27,12 @@ jobs:
           mkdir -p .gradle-docker
           export UID GID=$(id -g)
           make image test build verify
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: plugin-zip
           path: build/distributions/*.zip
       - if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: reports
           path: build/reports/**
