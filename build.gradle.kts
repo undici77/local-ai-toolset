@@ -87,3 +87,7 @@ intellijPlatform {
         }
     }
 }
+
+// verifyPluginSignature reads signPlugin's output but the plugin does not declare the dependency;
+// Gradle 9 fails when both run in one invocation.
+tasks.named("verifyPluginSignature") { dependsOn("signPlugin") }
