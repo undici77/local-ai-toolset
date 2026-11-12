@@ -1,0 +1,10 @@
+build/
+.gradle/
+.idea/
+*.iml
+out/
+*.pem
+*.crt
+.env
+secrets/
+.gradle-docker/

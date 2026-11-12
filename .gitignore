@@ -1,0 +1,15 @@
+build/
+.gradle/
+.idea/
+*.iml
+out/
+.intellijPlatform/
+*.pem
+*.crt
+.env
+secrets/
+.gradle-docker/
+.DS_Store
+.claude/
+.qwen/
+

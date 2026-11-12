@@ -1,0 +1,39 @@
+name: release
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GRADLE_CACHE: ${{ github.workspace }}/.gradle-docker
+      CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+      PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag must match pluginVersion
+        run: test "v$(grep ^pluginVersion= gradle.properties | cut -d= -f2)" = "$GITHUB_REF_NAME"
+      - uses: actions/cache@v4
+        with:
+          path: .gradle-docker
+          key: gradle-${{ hashFiles('**/*.gradle.kts', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/lib/android
+      - name: Test and verify
+        run: |
+          mkdir -p .gradle-docker
+          export UID GID=$(id -g)
+          make image test verify
+      - name: Sign and publish
+        run: docker compose run --rm build ./gradlew --no-daemon signPlugin publishPlugin
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          docker compose run --rm build ./gradlew --no-daemon -q getChangelog --no-header > release-notes.md
+          gh release create "$GITHUB_REF_NAME" build/distributions/*-signed.zip --notes-file release-notes.md

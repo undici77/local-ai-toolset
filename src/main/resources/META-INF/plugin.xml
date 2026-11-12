@@ -1,0 +1,48 @@
+<idea-plugin>
+  <id>com.undici77.aitoolset</id>
+  <name>Local AI Toolset</name>
+  <vendor>Undici77</vendor>
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.vcs</depends>
+  <extensions defaultExtensionNs="com.intellij">
+    <notificationGroup id="AI Toolset" displayType="BALLOON"/>
+    <projectConfigurable parentId="tools" id="com.undici77.aitoolset.settings"
+        displayName="Local AI Toolset" instance="com.undici77.aitoolset.config.ui.AiToolsetConfigurable"/>
+    <toolWindow id="AI Chat" anchor="right" secondary="false" icon="/icons/ai-chat-tool-window.svg"
+                factoryClass="com.undici77.aitoolset.chat.ChatToolWindowFactory" doNotActivateOnStart="true"/>
+  </extensions>
+
+  <actions>
+    <action id="LocalAiToolset.GenerateCommitMessage"
+            class="com.undici77.aitoolset.commit.GenerateCommitMessageAction"
+            text="Generate Commit Message (AI)" description="Generate a commit message from the checked changes"
+            icon="/icons/ai-sparkle.svg">
+      <add-to-group group-id="Vcs.MessageActionGroup" anchor="first"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt G"/>
+    </action>
+    <action id="LocalAiToolset.GenerateCommitMessageWithHint"
+            class="com.undici77.aitoolset.commit.GenerateWithHintAction"
+            text="Generate Commit Message with Hint (AI)…">
+      <add-to-group group-id="Vcs.MessageActionGroup" anchor="after" relative-to-action="LocalAiToolset.GenerateCommitMessage"/>
+    </action>
+    <action id="LocalAiToolset.AddToChat"
+            class="com.undici77.aitoolset.chat.actions.AddToChatAction"
+            text="Add to AI Chat" description="Add the selected files to the AI Chat context"
+            icon="/icons/ai-chat.svg">
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+      <add-to-group group-id="EditorTabPopupMenu" anchor="last"/>
+    </action>
+    <action id="LocalAiToolset.AskAboutSelection"
+            class="com.undici77.aitoolset.chat.actions.AskAboutSelectionAction"
+            text="Ask AI About Selection" description="Ask the AI Chat about the selected code"
+            icon="/icons/ai-chat.svg">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+    <action id="LocalAiToolset.ExplainCommit"
+            class="com.undici77.aitoolset.vcs.ExplainCommitAction"
+            text="Explain Commit (AI)" description="Explain the selected commit in the AI Chat"
+            icon="/icons/ai-sparkle.svg">
+      <add-to-group group-id="Vcs.Log.ContextMenu" anchor="last"/>
+    </action>
+  </actions>
+</idea-plugin>
